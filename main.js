@@ -369,6 +369,8 @@ function init() {
         gl = canvas.getContext("webgl");
         video = document.createElement('video');
         video.setAttribute('autoplay', true);
+        video.setAttribute('playsinline', true);
+        video.setAttribute('muted', true);
         window.vid = video;
         getWebcam();
         CreateWebCamTexture();
