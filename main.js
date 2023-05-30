@@ -11,10 +11,10 @@ let texture;
 let webCamTexture;
 let webCamSurface;
 
-let gl;                         
-let surface;                    
-let shProgram;                  
-let trackball;                  
+let gl;
+let surface;
+let shProgram;
+let trackball;
 
 let point;
 let texturePoint;
@@ -94,12 +94,12 @@ function ShaderProgram(name, program) {
 let a, b, c;
 let top1, bottom, left, right, near, far;
 function draw() {
-    
+
     gl.clearColor(0, 0, 0, 1);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     gyroToMat();
     calcCamParameters();
-    
+
     applyLeftFrustrum();
 
     let projectionLeft = m4.frustum(left, right, bottom, top1, near, far);
@@ -111,7 +111,7 @@ function draw() {
     let modelView = trackball.getViewMatrix();
 
     let rotateToPointZero = m4.axisRotation([0.707, 0.707, 0], 0.7);
-    
+
     let translateToPointZero = m4.translation(0, 0, -10);
     let translateToLeft = m4.translation(-0.03, 0, -20);
     let translateToRight = m4.translation(0.03, 0, -20);
@@ -154,7 +154,7 @@ function draw() {
 
     gl.uniformMatrix4fv(shProgram.iModelViewMatrix, false, matAccumRight);
     gl.uniformMatrix4fv(shProgram.iProjectionMatrix, false, projectionRight);
-    
+
     gl.colorMask(true, false, false, false);
     surface.Draw();
 
@@ -260,10 +260,10 @@ function CreateTexture() {
     let uMax = Math.PI * 2
     let vMax = Math.PI
     let step = 0.05;
-    
+
     let uStep = map(step, 0, uMax*2, 0, 1)
     let vStep = map(step, 0, vMax, 0, 1)
-    
+
     for (let u = 0; u < uMax*2; u += step) {
         for (let v = 0; v < vMax; v += step) {
             let u1 = map(u, 0,uMax*2, 0, 1)
@@ -305,10 +305,10 @@ function r(u,v){
     return ((ass(u,v)/Math.sqrt(C))*Math.sqrt((C+1)*(1+C*Math.sin(u)**2))*Math.sin(v))
 }
 function initGL() {
-    
+
     readGyroscope();
     gyroToMat();
-    
+
     let prog = createProgram(gl, vertexShaderSource, fragmentShaderSource);
 
     shProgram = new ShaderProgram('Basic', prog);
@@ -362,7 +362,7 @@ function createProgram(gl, vShader, fShader) {
 function init() {
 
     //requestDeviceOrientationPermission();
-    
+
     texturePoint = { x: 0.5, y: 0.5 }
     scale = 1.0;
     let canvas;
