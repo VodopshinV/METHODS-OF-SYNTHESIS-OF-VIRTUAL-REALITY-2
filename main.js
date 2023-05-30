@@ -99,7 +99,6 @@ function ShaderProgram(name, program) {
 let a, b, c;
 let top1, bottom, left, right, near, far;
 function draw() {
-    
     filteredGyroToMat();
     gl.clearColor(0, 0, 0, 1);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -403,7 +402,7 @@ function init() {
 
     trackball = new TrackballRotator(canvas, draw, 0);
 
-    requestAnimationFrame(draw); // Call 'draw' 60 times per second (adjust the value as needed)
+    setInterval(draw, 1000 / 60); // Call 'draw' 60 times per second (adjust the value as needed)
 }
 
 function userInit() {
