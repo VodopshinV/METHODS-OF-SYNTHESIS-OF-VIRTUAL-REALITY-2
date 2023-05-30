@@ -30,8 +30,8 @@ let alpha = 0,
     x,
     y,
     z;
-const EPSILON = 0.001;
-const MS2S = 1.0 / 1000.0;
+const EPSILON = 0.01;
+const MS2S = 1.0 / 10000.0;
 
 function Model(name) {
     this.name = name;
