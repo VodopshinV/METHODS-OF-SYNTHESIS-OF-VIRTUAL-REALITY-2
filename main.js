@@ -479,22 +479,6 @@ function applyRightFrustrum() {
 function readGyroscope() {
     if (window.DeviceOrientationEvent) {
         timeStamp = Date.now();
-        let sensor = new Gyroscope({
-            frequency: 60
-        });
-        sensor.addEventListener('reading', e => {
-            x = sensor.x
-            y = sensor.y
-            z = sensor.z
-        });
-        sensor.start();
-    } else alert('Gyroscope not supported');
-
-}
-/*
-function readGyroscope() {
-    if (window.DeviceOrientationEvent) {
-        timeStamp = Date.now();
         window.addEventListener("deviceorientation", function (event) {
             // Convert degrees to radians
             alpha = (event.alpha * Math.PI) / 180;
@@ -519,7 +503,7 @@ function readGyroscope() {
     } else {
         alert("DeviceMotionEvent is not supported");
     }
-}*/
+}
 function gyroToMat() {
     if (x != null) {
         let dT = (performance.now() - timeStamp) * MS2S;
