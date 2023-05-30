@@ -360,8 +360,6 @@ function createProgram(gl, vShader, fShader) {
     return prog;
 }
 function init() {
-
-    requestDeviceOrientationPermission();
     
     texturePoint = { x: 0.5, y: 0.5 }
     scale = 1.0;
@@ -398,7 +396,8 @@ function init() {
     trackball = new TrackballRotator(canvas, draw, 0);
 
     setInterval(draw, 1000 / 60); // Call 'draw' 60 times per second (adjust the value as needed)
-    //playVideoFix()
+
+    requestDeviceOrientationPermission();
 }
 
 function getWebcam() {
@@ -620,9 +619,15 @@ function gyroRotationMatrix() {
         return m4.axisRotation([0.707, 0.707, 0], 0.7);
     }
 
-    let xRotation = m4.rotationX(beta);  // beta from gyroscope
-    let yRotation = m4.rotationY(alpha); // alpha from gyroscope
-    let zRotation = m4.rotationZ(gamma); // gamma from gyroscope
+    let xRotation, yRotation, zRotation;
+    if(typeof DeviceOrientationEvent.requestPermission === "function") {
+        xRotation = m4.rotationX(beta);
+        yRotation = m4.rotationY(alpha);
+        zRotation = m4.rotationZ(gamma);
+    } else {
+        // If permission not granted, use default rotation
+        return m4.axisRotation([0.707, 0.707, 0], 0.7);
+    }
 
     return m4.multiply(m4.multiply(zRotation, yRotation), xRotation);
 }
