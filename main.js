@@ -476,7 +476,7 @@ function applyRightFrustrum() {
 }
 
 
-/*function readGyroscope() {
+function readGyroscope() {
     if (window.DeviceOrientationEvent) {
         timeStamp = Date.now();
         let sensor = new Gyroscope({
@@ -490,8 +490,8 @@ function applyRightFrustrum() {
         sensor.start();
     } else alert('Gyroscope not supported');
 
-}*/
-
+}
+/*
 function readGyroscope() {
     if (window.DeviceOrientationEvent) {
         timeStamp = Date.now();
@@ -519,7 +519,7 @@ function readGyroscope() {
     } else {
         alert("DeviceMotionEvent is not supported");
     }
-}
+}*/
 function gyroToMat() {
     if (x != null) {
         let dT = (performance.now() - timeStamp) * MS2S;
