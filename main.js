@@ -360,6 +360,8 @@ function createProgram(gl, vShader, fShader) {
     return prog;
 }
 function init() {
+
+    //requestDeviceOrientationPermission();
     
     texturePoint = { x: 0.5, y: 0.5 }
     scale = 1.0;
@@ -396,10 +398,11 @@ function init() {
     trackball = new TrackballRotator(canvas, draw, 0);
 
     setInterval(draw, 1000 / 60); // Call 'draw' 60 times per second (adjust the value as needed)
-
-    requestDeviceOrientationPermission();
 }
 
+function userInit() {
+    requestDeviceOrientationPermission();
+}
 function getWebcam() {
     if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         navigator.mediaDevices
