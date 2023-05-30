@@ -33,6 +33,11 @@ let alpha = 0,
 const EPSILON = 0.001;
 const MS2S = 1.0 / 1000.0;
 
+let filteredAlpha = 0, filteredBeta = 0, filteredGamma = 0;
+
+function lowPassFilterEMA(newValue, oldValue, alpha) {
+    return alpha * newValue + (1 - alpha) * oldValue;
+}
 function Model(name) {
     this.name = name;
     this.iVertexBuffer = gl.createBuffer();
@@ -484,9 +489,15 @@ function readGyroscope() {
         timeStamp = Date.now();
         window.addEventListener("deviceorientation", function (event) {
             // Convert degrees to radians
-            alpha = (event.alpha * Math.PI) / 180;
-            beta = (event.beta * Math.PI) / 180;
-            gamma = (event.gamma * Math.PI) / 180;
+            const newAlpha = (event.alpha * Math.PI) / 180;
+            const newBeta = (event.beta * Math.PI) / 180;
+            const newGamma = (event.gamma * Math.PI) / 180;
+
+            // Apply low-pass filter (EMA) with a chosen smoothing factor (0.1 to 0.9)
+            const smoothingFactor = 0.5;
+            filteredAlpha = lowPassFilterEMA(newAlpha, filteredAlpha, smoothingFactor);
+            filteredBeta = lowPassFilterEMA(newBeta, filteredBeta, smoothingFactor);
+            filteredGamma = lowPassFilterEMA(newGamma, filteredGamma, smoothingFactor);
 
             // Display values
             document.getElementById("alphaValue").textContent = event.alpha.toFixed(2);
@@ -512,18 +523,18 @@ function gyroToMat() {
         let dT = (performance.now() - timeStamp) * MS2S;
         let omegaMagnitude = Math.sqrt(x * x, y * y, z * z);
         if (omegaMagnitude > EPSILON) {
-            alpha += x * dT
-            beta += y * dT
-            gamma += z * dT
+            alpha += x * dT;
+            beta += y * dT;
+            gamma += z * dT;
             alpha = Math.min(Math.max(alpha, -Math.PI * 0.25), Math.PI * 0.25)
             beta = Math.min(Math.max(beta, -Math.PI * 0.25), Math.PI * 0.25)
             gamma = Math.min(Math.max(gamma, -Math.PI * 0.25), Math.PI * 0.25)
 
             let deltaRotationVector = [];
 
-            deltaRotationVector.push(alpha);
-            deltaRotationVector.push(beta);
-            deltaRotationVector.push(gamma);
+            deltaRotationVector.push(filteredAlpha);
+            deltaRotationVector.push(filteredBeta);
+            deltaRotationVector.push(filteredGamma);
 
             deltaRotationMatrix = getRotationMatrixFromVector(deltaRotationVector)
 
