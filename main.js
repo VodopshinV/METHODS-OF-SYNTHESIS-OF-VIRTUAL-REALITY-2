@@ -111,14 +111,13 @@ function draw() {
     let modelView = trackball.getViewMatrix();
 
     let rotateToPointZero = m4.axisRotation([0.707, 0.707, 0], 0.7);
-
-    //let gyroMatrix = gyroRotationMatrix();
-    //let matAccum0 = m4.multiply(gyroMatrix, modelView);
+    
     let translateToPointZero = m4.translation(0, 0, -10);
     let translateToLeft = m4.translation(-0.03, 0, -20);
     let translateToRight = m4.translation(0.03, 0, -20);
 
-    let matAccum0 = m4.multiply(rotateToPointZero, modelView);
+    let gyroMatrix = gyroRotationMatrix();
+    let matAccum0 = m4.multiply(m4.multiply(gyroMatrix, rotateToPointZero), modelView);
     let matAccumLeft = m4.multiply(translateToLeft, matAccum0);
     let matAccumRight = m4.multiply(translateToRight, matAccum0);
 
@@ -616,6 +615,11 @@ function requestDeviceOrientationPermission() {
 }
 
 function gyroRotationMatrix() {
+    if (!window.DeviceOrientationEvent || (alpha === 0 && beta === 0 && gamma === 0)) {
+        // Use rotateToPointZero if there's no gyroscope data
+        return m4.axisRotation([0.707, 0.707, 0], 0.7);
+    }
+
     let xRotation = m4.rotationX(beta);  // beta from gyroscope
     let yRotation = m4.rotationY(alpha); // alpha from gyroscope
     let zRotation = m4.rotationZ(gamma); // gamma from gyroscope
