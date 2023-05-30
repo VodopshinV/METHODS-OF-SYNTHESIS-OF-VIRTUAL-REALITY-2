@@ -391,13 +391,32 @@ function init() {
 
     playVideoFix()
 }
+
 function getWebcam() {
-    navigator.getUserMedia({ video: true, audio: false }, function (stream) {
-        video.srcObject = stream;
-        track = stream.getTracks()[0];
-    }, function (e) {
-        console.error('Rejected!', e);
-    });
+    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        navigator.mediaDevices
+            .getUserMedia({ video: true, audio: false })
+            .then(function (stream) {
+                video.srcObject = stream;
+                track = stream.getTracks()[0];
+            })
+            .catch(function (e) {
+                console.error("Rejected!", e);
+            });
+    } else if (navigator.webkitGetUserMedia) {
+        navigator.webkitGetUserMedia(
+            { video: true, audio: false },
+            function (stream) {
+                video.srcObject = stream;
+                track = stream.getTracks()[0];
+            },
+            function (e) {
+                console.error("Rejected!", e);
+            }
+        );
+    } else {
+        console.error("WebRTC is not supported in this browser.");
+    }
 }
 
 function CreateWebCamTexture() {
