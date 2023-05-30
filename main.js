@@ -503,6 +503,16 @@ function readGyroscope() {
     } else {
         alert("DeviceOrientationEvent is not supported");
     }
+
+    if (window.DeviceMotionEvent) {
+        window.addEventListener("devicemotion", function (event) {
+            x = event.rotationRate.alpha;
+            y = event.rotationRate.beta;
+            z = event.rotationRate.gamma;
+        });
+    } else {
+        alert("DeviceMotionEvent is not supported");
+    }
 }
 
 function gyroToMat() {
@@ -572,7 +582,7 @@ function getRotationMatrixFromVector(rotationVector) {
 }
 
 function requestDeviceOrientationPermission() {
-    if (typeof DeviceOrientationEvent.requestPermission === "function") {
+    if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === "function") {
         DeviceOrientationEvent.requestPermission()
             .then(function (permissionState) {
                 if (permissionState === "granted") {
@@ -584,8 +594,20 @@ function requestDeviceOrientationPermission() {
             .catch(function (error) {
                 console.error("Error requesting device orientation permission:", error);
             });
+    } else if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === "function") {
+        DeviceMotionEvent.requestPermission()
+            .then(function (permissionState) {
+                if (permissionState === "granted") {
+                    readGyroscope();
+                } else {
+                    alert("Device motion permission not granted");
+                }
+            })
+            .catch(function (error) {
+                console.error("Error requesting device motion permission:", error);
+            });
     } else {
-        // DeviceOrientationEvent.requestPermission is not a function, so we assume permission is granted by default (non-iOS 13+)
+        // No requestPermission function, so we assume permission is granted by default (non-iOS 13+)
         readGyroscope();
     }
 }
