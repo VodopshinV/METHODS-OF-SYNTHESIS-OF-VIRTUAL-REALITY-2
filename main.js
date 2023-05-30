@@ -33,6 +33,11 @@ let alpha = 0,
 const EPSILON = 0.001;
 const MS2S = 1.0 / 1000.0;
 
+
+let prevAlpha = 0;
+let prevBeta = 0;
+let prevGamma = 0;
+let smoothingFactor = 0.9; // Adjust between 0.0 (no filtering) and 1.0 (maximum filtering)
 function Model(name) {
     this.name = name;
     this.iVertexBuffer = gl.createBuffer();
@@ -95,6 +100,7 @@ let a, b, c;
 let top1, bottom, left, right, near, far;
 function draw() {
     
+    filteredGyroToMat();
     gl.clearColor(0, 0, 0, 1);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     gyroToMat();
@@ -397,7 +403,7 @@ function init() {
 
     trackball = new TrackballRotator(canvas, draw, 0);
 
-    setInterval(draw, 1000 / 60); // Call 'draw' 60 times per second (adjust the value as needed)
+    requestAnimationFrame(draw); // Call 'draw' 60 times per second (adjust the value as needed)
 }
 
 function userInit() {
@@ -618,7 +624,39 @@ function gyroRotationMatrix() {
 
     return m4.multiply(m4.multiply(zRotation, yRotation), xRotation);
 }
+function filteredGyroToMat() {
+    if (x != null) {
+        let dT = (performance.now() - timeStamp) * MS2S;
+        let omegaMagnitude = Math.sqrt(x * x, y * y, z * z);
+        if (omegaMagnitude > EPSILON) {
 
+            // Apply low-pass filtering
+            alpha = prevAlpha + (1.0 - smoothingFactor) * (alpha - prevAlpha);
+            beta = prevBeta + (1.0 - smoothingFactor) * (beta - prevBeta);
+            gamma = prevGamma + (1.0 - smoothingFactor) * (gamma - prevGamma);
+
+            prevAlpha = alpha;
+            prevBeta = beta;
+            prevGamma = gamma;
+
+            alpha += x * dT
+            beta += y * dT
+            gamma += z * dT
+            alpha = Math.min(Math.max(alpha, -Math.PI  * 0.25),  Math.PI  * 0.25)
+            beta = Math.min(Math.max(beta, -Math.PI   * 0.25),   Math.PI   * 0.25)
+            gamma = Math.min(Math.max(gamma, -Math.PI * 0.25), Math.PI * 0.25)
+
+            let deltaRotationVector = [];
+
+            deltaRotationVector.push(alpha);
+            deltaRotationVector.push(beta);
+            deltaRotationVector.push(gamma);
+            deltaRotationMatrix = getRotationMatrixFromVector(deltaRotationVector)
+
+            timeStamp = Date.now();
+        }
+    }
+}
 function createRotationMatrix(angle, axis) {
     let c = Math.cos(angle);
     let s = Math.sin(angle);
@@ -646,3 +684,4 @@ function createRotationMatrix(angle, axis) {
         ];
     }
 }
+
