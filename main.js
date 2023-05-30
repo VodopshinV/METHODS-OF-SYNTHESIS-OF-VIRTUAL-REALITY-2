@@ -30,8 +30,8 @@ let alpha = 0,
     x,
     y,
     z;
-const EPSILON = 0.00000001;
-const MS2S = 1.0 / 1.0;
+const EPSILON = 0.0001;
+const MS2S = 1.0 / 1000.0;
 
 let filteredAlpha = 0, filteredBeta = 0, filteredGamma = 0;
 
