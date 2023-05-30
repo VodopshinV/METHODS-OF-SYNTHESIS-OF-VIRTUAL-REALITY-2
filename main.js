@@ -500,6 +500,11 @@ function readGyroscope() {
             alpha = (event.alpha * Math.PI) / 180;
             beta = (event.beta * Math.PI) / 180;
             gamma = (event.gamma * Math.PI) / 180;
+
+            // Display values
+            document.getElementById("alphaValue").textContent = event.alpha.toFixed(2);
+            document.getElementById("betaValue").textContent = event.beta.toFixed(2);
+            document.getElementById("gammaValue").textContent = event.gamma.toFixed(2);
         });
     } else {
         alert("DeviceOrientationEvent is not supported");
@@ -514,20 +519,7 @@ function readGyroscope() {
     } else {
         alert("DeviceMotionEvent is not supported");
     }
-
-    window.addEventListener("deviceorientation", function (event) {
-        // Convert degrees to radians
-        alpha = (event.alpha * Math.PI) / 180;
-        beta = (event.beta * Math.PI) / 180;
-        gamma = (event.gamma * Math.PI) / 180;
-
-        // Display values
-        document.getElementById("alphaValue").textContent = event.alpha.toFixed(2);
-        document.getElementById("betaValue").textContent = event.beta.toFixed(2);
-        document.getElementById("gammaValue").textContent = event.gamma.toFixed(2);
-    });
 }
-
 function gyroToMat() {
     if (x != null) {
         let dT = (performance.now() - timeStamp) * MS2S;
