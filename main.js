@@ -33,6 +33,8 @@ let alpha = 0,
 const EPSILON = 0.001;
 const MS2S = 1.0 / 1000.0;
 
+let prevRotationData = [];
+let maxDataCount = 10;
 function Model(name) {
     this.name = name;
     this.iVertexBuffer = gl.createBuffer();
@@ -484,9 +486,9 @@ function readGyroscope() {
         timeStamp = Date.now();
         window.addEventListener("deviceorientation", function (event) {
             // Convert degrees to radians
-            alpha = (event.alpha * Math.PI) / 180;
-            beta = (event.beta * Math.PI) / 180;
-            gamma = (event.gamma * Math.PI) / 180;
+            alpha += x * dT;
+            beta += y * dT;
+            gamma += z * dT;
 
             // Display values
             document.getElementById("alphaValue").textContent = event.alpha.toFixed(2);
@@ -502,6 +504,8 @@ function readGyroscope() {
             x = event.rotationRate.alpha;
             y = event.rotationRate.beta;
             z = event.rotationRate.gamma;
+
+            addRotationData(rotationData);
         });
     } else {
         alert("DeviceMotionEvent is not supported");
@@ -605,6 +609,23 @@ function requestDeviceOrientationPermission() {
 }
 
 function gyroRotationMatrix() {
+
+    if (prevRotationData.length === 0) {
+        return m4.axisRotation([0.707, 0.707, 0], 0.7);
+    }
+
+    let xRotationRate = 0, yRotationRate = 0, zRotationRate = 0;
+    
+    prevRotationData.forEach(data => {
+        xRotationRate += data.x;
+        yRotationRate += data.y;
+        zRotationRate += data.z;
+    });
+
+    x = xRotationRate / prevRotationData.length;
+    y = yRotationRate / prevRotationData.length;
+    z = zRotationRate / prevRotationData.length;
+    
     if (!window.DeviceOrientationEvent || (alpha === 0 && beta === 0 && gamma === 0)) {
         // Use rotateToPointZero if there's no gyroscope data
         return m4.axisRotation([0.707, 0.707, 0], 0.7);
@@ -644,5 +665,13 @@ function createRotationMatrix(angle, axis) {
             0, 0, 1, 0,
             0, 0, 0, 1,
         ];
+    }
+}
+
+
+function addRotationData(data) {
+    prevRotationData.push(data);
+    if(prevRotationData.length > maxDataCount) {
+        prevRotationData.shift();
     }
 }
