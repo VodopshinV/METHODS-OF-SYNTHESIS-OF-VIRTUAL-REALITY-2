@@ -358,6 +358,9 @@ function createProgram(gl, vShader, fShader) {
     return prog;
 }
 function init() {
+
+    requestDeviceOrientationPermission();
+    
     texturePoint = { x: 0.5, y: 0.5 }
     scale = 1.0;
     let canvas;
@@ -418,7 +421,6 @@ function getWebcam() {
         console.error("WebRTC is not supported in this browser.");
     }
 }
-
 function CreateWebCamTexture() {
     webCamTexture = gl.createTexture();
     gl.bindTexture(gl.TEXTURE_2D, webCamTexture);
@@ -463,7 +465,7 @@ function applyRightFrustrum() {
 }
 
 
-function readGyroscope() {
+/*function readGyroscope() {
     if (window.DeviceOrientationEvent) {
         timeStamp = Date.now();
         let sensor = new Gyroscope({
@@ -477,6 +479,20 @@ function readGyroscope() {
         sensor.start();
     } else alert('Gyroscope not supported');
 
+}*/
+
+function readGyroscope() {
+    if (window.DeviceOrientationEvent) {
+        timeStamp = Date.now();
+        window.addEventListener("deviceorientation", function (event) {
+            // Convert degrees to radians
+            alpha = (event.alpha * Math.PI) / 180;
+            beta = (event.beta * Math.PI) / 180;
+            gamma = (event.gamma * Math.PI) / 180;
+        });
+    } else {
+        alert("DeviceOrientationEvent is not supported");
+    }
 }
 
 function gyroToMat() {
@@ -543,4 +559,23 @@ function getRotationMatrixFromVector(rotationVector) {
     R.push(0.0);
     R.push(1.0);
     return R;
+}
+
+function requestDeviceOrientationPermission() {
+    if (typeof DeviceOrientationEvent.requestPermission === "function") {
+        DeviceOrientationEvent.requestPermission()
+            .then(function (permissionState) {
+                if (permissionState === "granted") {
+                    readGyroscope();
+                } else {
+                    alert("Device orientation permission not granted");
+                }
+            })
+            .catch(function (error) {
+                console.error("Error requesting device orientation permission:", error);
+            });
+    } else {
+        // DeviceOrientationEvent.requestPermission is not a function, so we assume permission is granted by default (non-iOS 13+)
+        readGyroscope();
+    }
 }
