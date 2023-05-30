@@ -371,6 +371,7 @@ function init() {
         video.setAttribute('autoplay', true);
         video.setAttribute('playsinline', true);
         video.setAttribute('muted', true);
+        video.style.opacity = 0; // Make video element invisible
         window.vid = video;
         getWebcam();
         CreateWebCamTexture();
@@ -394,8 +395,8 @@ function init() {
 
     trackball = new TrackballRotator(canvas, draw, 0);
 
-    //playVideoFix()
     setInterval(draw, 1000 / 60); // Call 'draw' 60 times per second (adjust the value as needed)
+    //playVideoFix()
 }
 
 function getWebcam() {
@@ -405,6 +406,7 @@ function getWebcam() {
             .then(function (stream) {
                 video.srcObject = stream;
                 track = stream.getTracks()[0];
+                video.play();
             })
             .catch(function (e) {
                 console.error("Rejected!", e);
@@ -415,6 +417,7 @@ function getWebcam() {
             function (stream) {
                 video.srcObject = stream;
                 track = stream.getTracks()[0];
+                video.play();
             },
             function (e) {
                 console.error("Rejected!", e);
@@ -424,12 +427,13 @@ function getWebcam() {
         console.error("WebRTC is not supported in this browser.");
     }
 }
+
 function CreateWebCamTexture() {
     webCamTexture = gl.createTexture();
     gl.bindTexture(gl.TEXTURE_2D, webCamTexture);
-    
+
     gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, true);
-    
+
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
