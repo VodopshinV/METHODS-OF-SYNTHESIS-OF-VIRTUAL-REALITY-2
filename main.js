@@ -392,7 +392,8 @@ function init() {
 
     trackball = new TrackballRotator(canvas, draw, 0);
 
-    playVideoFix()
+    //playVideoFix()
+    setInterval(draw, 1000 / 60); // Call 'draw' 60 times per second (adjust the value as needed)
 }
 
 function getWebcam() {
