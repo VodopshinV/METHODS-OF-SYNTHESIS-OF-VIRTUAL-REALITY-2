@@ -515,14 +515,22 @@ function readGyroscope() {
         alert("DeviceMotionEvent is not supported");
     }
 
-    window.addEventListener('deviceorientation', function(event) {
-        console.log(event.alpha, event.beta, event.gamma);
+    window.addEventListener("deviceorientation", function (event) {
+        // Convert degrees to radians
+        alpha = (event.alpha * Math.PI) / 180;
+        beta = (event.beta * Math.PI) / 180;
+        gamma = (event.gamma * Math.PI) / 180;
+
+        // Display values
+        document.getElementById("alphaValue").textContent = event.alpha.toFixed(2);
+        document.getElementById("betaValue").textContent = event.beta.toFixed(2);
+        document.getElementById("gammaValue").textContent = event.gamma.toFixed(2);
     });
 }
 
 function gyroToMat() {
     if (x != null) {
-        let dT = (Date.now() - timeStamp) * MS2S;
+        let dT = (performance.now() - timeStamp) * MS2S;
         let omegaMagnitude = Math.sqrt(x * x, y * y, z * z);
         if (omegaMagnitude > EPSILON) {
             alpha += x * dT
