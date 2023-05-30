@@ -620,14 +620,42 @@ function gyroRotationMatrix() {
     }
 
     let xRotation, yRotation, zRotation;
-    if(typeof DeviceOrientationEvent.requestPermission === "function") {
-        xRotation = m4.rotationX(beta);
-        yRotation = m4.rotationY(alpha);
-        zRotation = m4.rotationZ(gamma);
+    if (typeof DeviceOrientationEvent.requestPermission === "function") {
+        xRotation = createRotationMatrix(beta, "x");
+        yRotation = createRotationMatrix(alpha, "y");
+        zRotation = createRotationMatrix(gamma, "z");
     } else {
         // If permission not granted, use default rotation
         return m4.axisRotation([0.707, 0.707, 0], 0.7);
     }
 
     return m4.multiply(m4.multiply(zRotation, yRotation), xRotation);
+}
+
+function createRotationMatrix(angle, axis) {
+    let c = Math.cos(angle);
+    let s = Math.sin(angle);
+
+    if (axis === "x") {
+        return [
+            1, 0, 0, 0,
+            0, c, -s, 0,
+            0, s, c, 0,
+            0, 0, 0, 1,
+        ];
+    } else if (axis === "y") {
+        return [
+            c, 0, s, 0,
+            0, 1, 0, 0,
+            -s, 0, c, 0,
+            0, 0, 0, 1,
+        ];
+    } else if (axis === "z") {
+        return [
+            c, -s, 0, 0,
+            s, c, 0, 0,
+            0, 0, 1, 0,
+            0, 0, 0, 1,
+        ];
+    }
 }
