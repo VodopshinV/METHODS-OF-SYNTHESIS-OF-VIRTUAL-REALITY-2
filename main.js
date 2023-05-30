@@ -620,14 +620,10 @@ function gyroRotationMatrix() {
     }
 
     let xRotation, yRotation, zRotation;
-    if (typeof DeviceOrientationEvent.requestPermission === "function") {
-        xRotation = createRotationMatrix(beta, "x");
-        yRotation = createRotationMatrix(alpha, "y");
-        zRotation = createRotationMatrix(gamma, "z");
-    } else {
-        // If permission not granted, use default rotation
-        return m4.axisRotation([0.707, 0.707, 0], 0.7);
-    }
+
+    xRotation = createRotationMatrix(beta, "x");
+    yRotation = createRotationMatrix(alpha, "y");
+    zRotation = createRotationMatrix(gamma, "z");
 
     return m4.multiply(m4.multiply(zRotation, yRotation), xRotation);
 }
