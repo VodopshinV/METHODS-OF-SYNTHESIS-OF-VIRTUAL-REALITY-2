@@ -111,11 +111,14 @@ function draw() {
     let modelView = trackball.getViewMatrix();
 
     let rotateToPointZero = m4.axisRotation([0.707, 0.707, 0], 0.7);
+
+    let gyroMatrix = gyroRotationMatrix();
+    let matAccum0 = m4.multiply(gyroMatrix, modelView);
     let translateToPointZero = m4.translation(0, 0, -10);
     let translateToLeft = m4.translation(-0.03, 0, -20);
     let translateToRight = m4.translation(0.03, 0, -20);
 
-    let matAccum0 = m4.multiply(rotateToPointZero, modelView);
+    //let matAccum0 = m4.multiply(rotateToPointZero, modelView);
     let matAccumLeft = m4.multiply(translateToLeft, matAccum0);
     let matAccumRight = m4.multiply(translateToRight, matAccum0);
 
@@ -610,4 +613,12 @@ function requestDeviceOrientationPermission() {
         // No requestPermission function, so we assume permission is granted by default (non-iOS 13+)
         readGyroscope();
     }
+}
+
+function gyroRotationMatrix() {
+    let xRotation = m4.rotationX(beta);  // beta from gyroscope
+    let yRotation = m4.rotationY(alpha); // alpha from gyroscope
+    let zRotation = m4.rotationZ(gamma); // gamma from gyroscope
+
+    return m4.multiply(m4.multiply(zRotation, yRotation), xRotation);
 }
